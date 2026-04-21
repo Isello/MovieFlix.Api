@@ -1,0 +1,63 @@
+services:
+  # --- BANCO DE DADOS ANALÍTICO (DATA WAREHOUSE) ---
+  postgres_dw:
+    image: postgres:15-alpine
+    container_name: movieflix_dw
+    restart: always
+    environment:
+      POSTGRES_DB: movieflix_analytics
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: caixa_analytics
+    ports:
+      - "5432:5432"
+    volumes:
+      - dw_data:/var/lib/postgresql/data
+    networks:
+      - movieflix_net
+
+  # --- APLICAÇÃO (API .NET 9) ---
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: movieflix_api
+    restart: always
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:8080
+      # Conexão com o SQLite (Operacional)
+      - ConnectionStrings__DefaultConnection=Data Source=Data/movieflix.db
+      # Conexão com o Postgres (Analítico) - Repare que o Host é o nome do serviço 'postgres_dw'
+      - ConnectionStrings__DWConnection=Host=postgres_dw;Port=5432;Database=movieflix_analytics;Username=admin;Password=caixa_analytics
+    volumes:
+      # Volume para o Data Lake (CSVs) para que você veja os arquivos no Windows
+      - ./DataLake:/app/DataLake
+      # Volume para o banco SQLite não sumir ao reiniciar
+      - ./Data:/app/Data
+    depends_on:
+      postgres_dw:
+        condition: service_started
+    networks:
+      - movieflix_net
+
+  # --- PROXY REVERSO (NGINX) ---
+  nginx:
+    image: nginx:alpine
+    container_name: movieflix_proxy
+    restart: always
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - api
+    networks:
+      - movieflix_net
+
+# --- DEFINIÇÃO DE VOLUMES E REDES ---
+volumes:
+  dw_data: # Persistência do PostgreSQL
+
+networks:
+  movieflix_net:
+    driver: bridge
