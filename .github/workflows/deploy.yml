@@ -20,6 +20,6 @@ jobs:
       - name: Build e Push da Imagem
         uses: docker/build-push-action@v5
         with:
-          context: ./MovieFlix.Api
+          context: .
           push: true
           tags: ${{ secrets.DOCKER_USERNAME }}/movieflix-api:latest
