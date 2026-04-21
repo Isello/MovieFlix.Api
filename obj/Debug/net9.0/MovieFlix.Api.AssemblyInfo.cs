@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("MovieFlix.Api")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+0c32988a38696928735fa8f23aa56d54097a819a")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+b9f00d1ede09deb038b2d5a20d81cb56747fb6d3")]
 [assembly: System.Reflection.AssemblyProductAttribute("MovieFlix.Api")]
 [assembly: System.Reflection.AssemblyTitleAttribute("MovieFlix.Api")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
